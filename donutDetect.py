@@ -18,7 +18,7 @@ def getMouseEventLabColor(event, x, y, flags, param):
         bMinMax.append(int(b2))
 
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Cannot open camera")
     raise SystemExit
@@ -41,6 +41,12 @@ while True:
 
     mask = cv2.inRange(current_frame_lab, lower_lab, upper_lab)
 
+    # --- 1) clean mask --- ลด noise จุดเล็กๆจะหายไป ช่องว่างที่ติดกันจะเชื่อมกัน
+    clean = cv2.morphologyEx(mask, cv2.MORPH_OPEN, k, iterations=1)
+    clean = cv2.morphologyEx(clean, cv2.MORPH_CLOSE, k, iterations=2)
+
+    # --- 2) find contours --- เอาเฉพาะขอบที่ยังไม่สมบูรณ์
+    cnts, _ = cv2.findContours(clean, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cv2.imshow("frame", frame)
     cv2.imshow("mask", mask)
     if cv2.waitKey(1) & 0xFF == ord("q"):

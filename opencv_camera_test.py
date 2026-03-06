@@ -9,7 +9,7 @@ if not cap.isOpened():
 
 print("Press 'q' to quit.")
 
-while True:
+while True:d/ 
     # Capture frame-by-frame
     ret, frame = cap.read()
 

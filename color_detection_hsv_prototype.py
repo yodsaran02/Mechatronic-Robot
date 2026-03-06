@@ -1,22 +1,17 @@
 import cv2
 import numpy as np
+import json
+import time
+import serial
 # Open the default camera (usually index 0)
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
-if not cap.isOpened():
-    print("Error: Could not open camera.")
-    exit()
-
-print("Press 'q' to quit.")
-
-while True:
+def getDonutCoordinate():
     # Capture frame-by-frame
+    global cap
     ret, frame = cap.read()
 
     # If frame is read correctly ret is True
-    if not ret:
-        print("Error: Can't receive frame (stream end?). Exiting ...")
-        break
     hsv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     yellow_lower = np.array([20, 100, 100])  # Lower boundary for yellow in HSV
     yellow_upper = np.array([30, 255, 255])  # Upper boundary for yellow in HSV
@@ -38,14 +33,8 @@ while True:
         cX = int(M['m10'] / M['m00'])
         cY = int(M['m01'] / M['m00'])
     mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
-    cv2.line(frame, (cX, 0), (cX, height), (0, 255, 0), 3)
-    cv2.line(frame, (0, cY), (width, cY) , (0, 255, 0), 3)
-    cv2.imshow('Camera Feed', frame)
+    # cv2.line(frame, (cX, 0), (cX, height), (0, 255, 0), 3)
+    # cv2.line(frame, (0, cY), (width, cY) , (0, 255, 0), 3)
+    # cv2.imshow('Camera Feed', frame)
+    return cX, cY
 
-    # Break the loop if 'q' is pressed
-    if cv2.waitKey(1) == ord('q'):
-        break
-
-# When everything done, release the capture
-cap.release()
-cv2.destroyAllWindows()
